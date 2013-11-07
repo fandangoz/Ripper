@@ -1,0 +1,217 @@
+﻿@model WebUI.Models.OrderModelView
+
+@{
+    ViewBag.Title = "Create";
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var isCompanyValue = $("#Order_isCompany").val();
+        if (isCompanyValue == null || isCompanyValue == "" || isCompanyValue.toLowerCase() == "False".toLowerCase()) {
+            $("#Order_isCompany").val(false);
+        }
+        else {
+            $("#Order_isCompany").val(true)
+            $('#CompanyRadio').prop('checked', true);
+        }
+    });
+    $(document).ready(function () {
+        $(".EqType").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Orders/GerReperairTypes",
+                    type: "GET",
+                    data: { term: request.term },
+                    dataType: "json",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: this.label, value: item.Type };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                //close the drop down
+                this.close
+            },
+
+            open: function () {
+                $('.ui-autocomplete').css({ 'list-style': 'none', 'background-color': 'white' });
+            },
+
+        });
+    });
+    $(document).ready(function () {
+        $("#Order_EquipmentType_EquipmentTypeName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Orders/GetEqupmentTypes",
+                    type: "GET",
+                    data: { term: request.term },
+                    dataType: "json",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: this.label, value: item.Type };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                //close the drop down
+                this.close
+            },
+
+            open: function () {
+                $('.ui-autocomplete').css({ 'list-style': 'none', 'background-color': 'white' });
+            },
+
+        });
+    });
+    $(document).ready(function () {
+        $("#Name").autocomplete({
+            source: function (request, response) {
+                var type = $('input:radio[name=group1]:checked').val();
+                $.ajax({
+                    url: "/Orders/AutoCompleteClientName",
+                    type: "GET",
+                    dataType: "json",
+                    data: { term: request.term, type: type },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.Name, value: item.Name };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                //close the drop down
+                this.close
+            },
+
+            open: function () {
+                $('.ui-autocomplete').css({ 'list-style': 'none', 'background-color': 'white' });
+            },
+
+        });
+    });
+    $(document).ready(function () {
+        $('input[name=group1]').change(function () {
+            if ($('input:radio[name=group1]:checked').val() == "Firma") {
+                $("#Order_isCompany").val(true);
+            }
+            else {
+                $("#Order_isCompany").val(false);
+            }
+            $("#Name").val("");
+        });
+    });
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "yyyy-mm-dd",
+
+        })
+    })
+</script>
+<h2>Dodaj zlecenie</h2>
+
+<input id="CustomerRadio" type="radio" name="group1" value="Klient" checked>
+Klient prywatny 
+
+<input id="CompanyRadio" type="radio" name="group1" value="Firma">
+Firma 
+@using (Html.BeginHorizontalForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <fieldset>
+        <legend>Dane zlecenia</legend>
+        @Html.HiddenFor(x => x.Order.isCompany)
+        <div class="row-fluid">
+        <div class="row-fluid">
+            <div class="span6">
+                
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Name, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.EditorFor(model => model.Name)
+                        @Html.ValidationMessageFor(model => model.Name)
+                    </div>
+                </div>
+
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Order.EquipmentType.EquipmentTypeName, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.EditorFor(model => model.Order.EquipmentType.EquipmentTypeName)
+                        @Html.ValidationMessageFor(model => model.Order.EquipmentType.EquipmentTypeName)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Order.receivingDate, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.Order.receivingDate,"{0:yyyy-MM-dd}", new { @class ="datepicker"})
+                        @Html.ValidationMessageFor(model => model.Order.receivingDate)
+                    </div>
+                </div>
+            </div>
+            <div class="span6">
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Order.Description, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.EditorFor(model => model.Order.Description, new { @class = "control-label" })
+                        @Html.ValidationMessageFor(model => model.Order.Description)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Order.additionalInformation, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.EditorFor(model => model.Order.additionalInformation)
+                        @Html.ValidationMessageFor(model => model.Order.additionalInformation)
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+                        <div class="span12"></div>
+        <div class="span6 offset3">
+            <table>
+                <thead>
+                    <tr>
+                        <th>rodzaj naprawy</th>
+                        <th>cena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @Html.EditorFor(m => m.reperairTypePrice)
+                </tbody>
+            </table>
+        </div>
+            <div class="span12"></div>
+        <div class="span6 offset7">
+
+            <input type="submit" value="Dodaj zlecenie" class="btn btn-primary" />
+        </div>
+            </div>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+

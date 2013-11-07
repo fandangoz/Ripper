@@ -1,0 +1,59 @@
+﻿@model Domain.Entities.Company
+
+@{
+    ViewBag.Title = "EditCompany";
+}
+
+
+@using (Html.BeginHorizontalForm())
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Edycja formy</legend>
+
+        @Html.HiddenFor(model => model.CompanyID)
+
+
+        <div class="control-group">
+            @Html.LabelFor(model => model.CompanyName, new { @class = "control-label" })
+            <div class="controls">
+            @Html.EditorFor(model => model.CompanyName)
+            @Html.ValidationMessageFor(model => model.CompanyName)
+        </div></div>
+
+        <div class="control-group">
+            @Html.LabelFor(model => model.CompanyAddress, new { @class = "control-label" })
+            <div class="controls">
+            @Html.EditorFor(model => model.CompanyAddress)
+            @Html.ValidationMessageFor(model => model.CompanyAddress)
+        </div></div>
+
+        <div class="control-group">
+            @Html.LabelFor(model => model.CompanyRegon, new { @class = "control-label" })
+            <div class="controls">
+            @Html.EditorFor(model => model.CompanyRegon)
+            @Html.ValidationMessageFor(model => model.CompanyRegon)
+        </div></div>
+
+        <div class="control-group">
+            @Html.LabelFor(model => model.AdditionalData, new { @class = "control-label" })
+            <div class="controls">
+            @Html.EditorFor(model => model.AdditionalData)
+            @Html.ValidationMessageFor(model => model.AdditionalData)
+        </div></div>
+
+        <div class="control-group">
+                        <div class="controls">
+            <input type="submit" value="Zapisz zmiany" class="btn btn-primary" />
+        </div></div>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

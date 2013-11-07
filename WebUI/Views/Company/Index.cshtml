@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<script>
+    //$().ready(function () {
+    //    $("#NazwaSzukaj").keyup(ajaxCompanyFilter)
+      
+    //});
+    //$().ready(function () {
+    //    $("#RegonSzukaj").keyup(ajaxCompanyFilter)
+
+    //});
+    $().ready(function () {
+        $("#submitFilter").click(ajaxCompanyFilter);
+    });
+    var ajaxCompanyFilter = function () {
+            var companyName = $("#NazwaSzukaj").val();
+            var companyRegon = $("#RegonSzukaj").val();
+        $.ajax({
+            url: '@Url.Action("CompaniesList")',
+            data: {
+                companyName: companyName == null ? "" : companyName, companyRegon: companyRegon == null ? "" : companyRegon
+            },
+            success: function (data) {
+                $("#companies-list").html(data);
+            }
+        })
+     }
+    </script>
+<h2>Wyświetlanie firm</h2>
+<form class="form-horizontal">
+    <fieldset>
+        <legend>Filtr firm</legend>
+        <div class="row-fluid">
+        <div class="span3">
+            <div class="control-group">
+                <label class="control-label" for="NazwaSzukaj">Nazwa firmy:</label>
+                <div class="controls">
+                    <input id="NazwaSzukaj" type="text" class="input-small" placeholder="Nazwa">
+                </div>
+            </div>
+         </div>
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="RegonSzukaj">Regon firmy:</label>
+                <div class="controls">
+                    <input id="RegonSzukaj" type="text" class="input-small" placeholder="Regon">
+                </div>
+        </div>
+            </div>
+            
+                 <button  type="button" id="submitFilter" class="btn btn-small btn-primary" value="Szukaj"><i class="icon-search"></i>Szukaj</button>
+
+       </div>
+    </fieldset>
+</form>
+
+<div style="float:right;margin:10px"><a href="@Url.Action("Create")" class = "btn btn-primary btn-large"><i class="icon-share-alt" ></i>Dodaj firmę</a></div>
+
+
+<h2>Lista firm:</h2>
+<div id="companies-list">
+    @Html.Action("CompaniesList")
+
+</div>
+
+<p>@Html.ActionLink("Dodaj nową" , "Create")</p>

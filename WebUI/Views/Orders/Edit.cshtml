@@ -1,0 +1,179 @@
+﻿@model WebUI.Models.OrderModelView
+
+@{
+    ViewBag.Title = "Edit";
+}
+<script>
+    $(document).ready(function () {
+        $(".EqType").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Orders/GerReperairTypes",
+                    type: "GET",
+                    data: { term: request.term },
+                    dataType: "json",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: this.label, value: item.Type };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                //close the drop down
+                this.close
+            },
+
+            open: function () {
+                $('.ui-autocomplete').css({ 'list-style': 'none', 'background-color': 'white' });
+            },
+
+        });
+    });
+    $(document).ready(function () {
+        $("#Order_EquipmentType_EquipmentTypeName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Orders/GetEqupmentTypes",
+                    type: "GET",
+                    data: { term: request.term },
+                    dataType: "json",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: this.label, value: item.Type };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                //close the drop down
+                this.close
+            },
+
+            open: function () {
+                $('.ui-autocomplete').css({ 'list-style': 'none', 'background-color': 'white' });
+            },
+
+        });
+    });
+    $(document).ready(function () {
+        $('.selectpicker').selectpicker({
+            size: 5
+        });
+    });
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: "yyyy-mm-dd",
+
+        })
+    })
+</script>
+<h2>Edycja zlecenia</h2>
+<h4>Dane zleceniodawcy</h4>
+@if (Model.Order.Customer != null)
+{
+    Html.RenderPartial("_UserDetailsShared", Model.Order.Customer);
+}
+
+@if (Model.Order.Company != null)
+{
+    Html.RenderPartial("_CompanyDetailsShared", Model.Order.Company);
+}
+
+@using (Html.BeginHorizontalForm())
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Dane zlecenia</legend>
+
+        @Html.HiddenFor(model => model.Order.OrderID)
+        <div class="row-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+            <div class="span6">
+
+        <div class="control-group">
+            @Html.LabelFor(model => model.Order.EquipmentType.EquipmentTypeName, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(model => model.Order.EquipmentType.EquipmentTypeName)
+                @Html.ValidationMessageFor(model => model.Order.EquipmentType.EquipmentTypeName)
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(model => model.Order.receivingDate, new { @class = "control-label" })
+            <div class="controls">
+                @Html.TextBoxFor(model => model.Order.receivingDate,"{0:yyyy-MM-dd}", new { @class ="datepicker"})
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(model => model.Order.endDate, new { @class = "control-label" })
+            <div class="controls">
+            @Html.TextBoxFor(model => model.Order.endDate,"{0:yyyy-MM-dd}", new { @class ="datepicker"})
+            @Html.ValidationMessageFor(model => model.Order.endDate)
+        </div>
+            </div>
+        </div>
+            <div class="span6">
+        <div class="control-group">
+            @Html.LabelFor(model => model.Order.additionalInformation, new { @class = "control-label" })
+            <div class="controls">
+            @Html.EditorFor(model => model.Order.additionalInformation)
+            @Html.ValidationMessageFor(model => model.Order.additionalInformation)
+        </div>
+                    </div>
+        <div class="control-group">
+            @Html.LabelFor(model => model.Order.Description, new { @class = "control-label" })
+            <div class="controls">
+            @Html.EditorFor(model => model.Order.Description)
+        </div>
+                    </div>
+        <div class="control-group">
+            @Html.LabelFor(m => m.OrderStatusList, new { @class = "control-label" })
+                        <div class="controls">
+            @Html.DropDownListFor(m => m.selectedStatus, Model.OrderStatusList, new { @class = "selectpicker" })
+        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="span6 offset3">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rodzaj naprawy
+                        </th>
+                        <th>Wycena
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @Html.EditorFor(m => m.reperairTypePrice)
+
+                </tbody>
+            </table>
+        </div>
+            <div class="span12"></div>
+       <div class="span6 offset7">
+             <input type="submit" value="Zmień zlecenie" class="btn btn-primary" />
+    </div>
+        </div>
+    </div>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

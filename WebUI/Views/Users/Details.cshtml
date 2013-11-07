@@ -1,0 +1,19 @@
+﻿@model Domain.Entities.User
+
+@{
+    ViewBag.Title = "Details";
+}
+@{Html.RenderPartial("_UserDetailsShared", Model);}
+
+  @if(Model.Company != null)
+    {
+<h5>Firma:</h5>
+@Html.Action("CompaniesList","Company", new { companyName = Model.Company.CompanyName})
+    }
+<h5>Zlecenia:</h5>
+@Html.Action("OrdersList","Orders", new { isCompany = false , userId = @Model.UserID})
+<p>
+    @Html.ActionLink("Dodaj zlecenie dla tego użytkownika", "Create", "Orders", new { isCompany = false, id = @Model.UserID }, null)
+    @Html.ActionLink("Edit", "Edit", new { id=Model.UserID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

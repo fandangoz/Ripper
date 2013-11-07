@@ -1,0 +1,19 @@
+﻿@model WebUI.Models.CompanyUsersViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+@{Html.RenderPartial("_CompanyDetailsShared", Model.Company);}
+        <h5>Pracownicy:</h5>
+            @Html.Action("UsersList","Users", new { isCompany = true , companyID = @Model.Company.CompanyID})
+
+
+    <h5>Zlecenia</h5>
+        @Html.Action("OrdersList","Orders", new { isCompany = true , userId = @Model.Company.CompanyID})
+
+@Html.ActionLink("Dodaj zlecenie do tej firmy", "Create", "Orders", new { isCompany = true, id = @Model.Company.CompanyID }, null)
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Company.CompanyID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

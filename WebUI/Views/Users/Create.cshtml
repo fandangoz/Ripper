@@ -1,0 +1,185 @@
+﻿@model WebUI.Models.UserViewModel
+@{
+
+    ViewBag.Title = "Create";
+
+    
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#CompanyName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Company/AutoCompleteCompanyName",
+                    type: "GET",
+                    dataType: "json",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.CompanyName, value: item.CompanyName, };
+
+                        }))
+
+                    }
+                });
+            },
+            messages: {
+                noResults: "", results: ""
+            },
+            select: function (event, ui) {
+                //close the drop down
+                this.close
+            },
+
+            open: function () {
+                $('.ui-autocomplete').css({ 'list-style': 'none', 'background-color': 'white' });
+            },
+
+        });
+
+    });
+
+    $(document).ready(function () {
+        $("#companyFieldToggle").click(function () {
+            if ($("#companyFieldToggle").val().indexOf("Rozwiń") >= 0) {
+                $("#companyFieldToggle").val("Zwiń ekran dodawania firm");
+            } else {
+                $("#companyFieldToggle").val("Rozwiń ekran dodawania firm");
+            }
+            $("#CompanyForm").fadeToggle();
+            $("#CompanyAddOutput").hide();
+            $("#CompanyAddOutput").text("");
+        })
+    })
+    function onSuccess(data) {
+        $("#CompanyAddOutput").show();
+        $("#CompanyAddOutput").text(data);
+        if (data.indexOf("poprawnie") >= 0) {
+            $("#allerts").append(
+            '<div class="alert alert-success">' +
+              '<button type="button" class="close" data-dismiss="alert">' +
+                 '&times;</button> ' + data + ' </div>');
+            $("#CompanyAddOutput").text("");
+            $("#companyFieldToggle").val("Rozwiń ekran dodawania firm");
+            $("#CompanyForm").fadeToggle();
+        } else {
+            $("#CompanyAddOutput").addClass("text-warning");
+        }
+    }
+
+    $(document).ready(function () {
+        $("#CreatePasswordAutomatically").click(function () {
+            $("#Password").val($("#user_Login").val().toString());
+            $("#passwordConfirmation").val($("#user_Login").val().toString());
+        })
+    })
+
+
+</script>
+<div id="allerts">
+
+</div>
+@using (Html.BeginHorizontalForm())
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+
+        <legend>Podaj dane użytkownika</legend>
+        <div class="row-fluid">
+        <div class="span6">
+        <h4>Dane obowiązkowe:
+        </h4>
+
+        <div class="control-group">
+            @Html.LabelFor(x => x.user.Login, new { @class = "control-label" })
+            <div class="controls">
+
+                @Html.EditorFor(x => x.user.Login)
+                @Html.ValidationMessageFor(x => x.user.Login)
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(x => x.Password, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(x => x.Password)
+                @Html.ValidationMessageFor(x => x.Password)
+            </div>
+        </div>
+        <div class="control-group">
+
+            @Html.LabelFor(x => x.passwordConfirmation, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(x => x.passwordConfirmation)
+                @Html.ValidationMessageFor(x => x.passwordConfirmation)
+            </div>
+        </div>
+            <div class="span3 offset7">
+               <input type="button" class="btn btn-mini" id="CreatePasswordAutomatically" value="Skopiuj login jako hasło" /> 
+            </div>
+            </div>
+        <div class="span6">
+        <h4>Dane dodatkowe: </h4>
+        <div class="control-group">
+            @Html.LabelFor(x => x.user.Phone, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(x => x.user.Phone)
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(x => x.user.Name, new { @class = "control-label" })
+            <div class="controls">
+                @Html.EditorFor(x => x.user.Name)
+            </div>
+        </div>
+        <div class="control-group">
+            @Html.LabelFor(x => x.user.Surname, new { @class = "control-label" })
+            <div class="controls">
+                       @Html.EditorFor(x => x.user.Surname)
+ </div></div>
+        <div class="control-group">
+                @Html.LabelFor(x => x.user.Address, new { @class = "control-label" })
+                <div class="controls">
+
+
+                    @Html.EditorFor(x => x.user.Address)
+                </div>
+            </div>
+            <div class="control-group">
+                @Html.LabelFor(x => x.user.additionalInformation, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(x => x.user.additionalInformation)
+                </div>
+            </div>
+            <div class="control-group">
+                @Html.LabelFor(x => x.CompanyName, new { @class = "control-label" })
+                <div class="controls">
+                    @Html.EditorFor(x => x.CompanyName)
+                </div>
+            </div>
+<div class="span3 offset8">
+            <input type="submit" value="Dodaj użytkownika" class="btn btn-primary">
+        
+            </div>
+            </div>
+    </fieldset>
+}
+
+<hr />
+<div>
+    <label id="CompanyAddOutput"></label>
+</div>
+
+<div id="CompanyForm" hidden="hidden">
+    @using (Ajax.BeginForm("_AddNewCompany", "Company", new AjaxOptions() { HttpMethod = "POST", OnSuccess = "onSuccess" }))
+    {
+        { Html.RenderPartial("_AddNewCompany", new Company()); }
+    }
+</div>
+<hr />
+<p>
+    <input id="companyFieldToggle" class="btn btn-inverse" value="Rozwiń ekran dodawania firm"/>
+</p>
+
+

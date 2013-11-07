@@ -1,0 +1,113 @@
+﻿@model WebUI.Helpers.PagedData<Order>
+<script >
+    $().ready(function () {
+        $(".page-number").on("click", function () {
+ 
+            var page = parseInt($(this).html());
+ 
+            $.ajax({
+                url: '@Url.Action("OrdersList")',
+                data: { "page": page },
+                success: function (data) {
+                    $("#orders-list").html(data);
+                }
+            });
+        });
+    });
+
+</script>
+
+@if(Model.Data != null && Model.Data.Count() > 0)
+{
+<table class="table table-striped table-condensed table-bordered">
+    <thead>
+    <tr>
+        <th>
+            Nazwa użytkownika
+        </th>
+         @if (Model.Data.FirstOrDefault() != null && Model.Data.FirstOrDefault().Company != null)
+         {
+             <th>NIP</th>
+         }
+        else
+         {
+        <th id="changingName">Imię i nazwisko</th>
+         }
+        <th>
+            Data przyjęcia
+        </th>
+        <th> Data zakończenia</th>
+        <th>
+            Dodatkowe informacje
+        </th>
+        <th>Status</th>
+        <th>Typ sprzętu</th>
+        <th>Akcje</th>
+    </tr>
+</thead>
+    <tbody>
+@foreach (var item in Model.Data) {
+    <tr>
+        @if(item.Company != null)
+        {
+            <td>@Html.DisplayFor(modelItem => item.Company.CompanyName)</td>
+            <td>@Html.DisplayFor(modelItem => item.Company.CompanyRegon)</td>
+        }
+        else
+        {
+            <td>@Html.DisplayFor(modelItem => item.Customer.Login)</td>
+           
+            <td>
+
+                    @Html.DisplayFor(modelItem => item.Customer.FullName)
+
+            </td>
+        }
+        <td>
+            @Html.DisplayFor(modelItem => item.receivingDate)
+        </td>
+        <td>
+            @if(item.endNote != null)
+            {
+                Html.DisplayFor(modelItem => item.endDate);
+            }
+            else
+            {
+                @:brak
+            }
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.additionalInformation)
+        </td>
+            <td>@Html.DisplayFor(modelItem => item.OrderStatus.OrderStatusName)</td>
+            <td>@Html.DisplayFor(modelItem => item.EquipmentType.EquipmentTypeName)</td>
+        <td>
+           <div class="btn-group">
+               <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-wrench"></i>  Operacje</a>
+           <ul class="dropdown-menu">
+               <li>
+            @Html.ActionLink("Edycja", "Edit", new { id=item.OrderID }) </li>
+            <li>@Html.ActionLink("Szczegóły", "Details", new { id=item.OrderID }) </li>
+               </ul>
+               </div>
+        </td>
+    </tr>
+}
+</tbody>
+    <tfoot>
+        <tr>
+            <td colspan ="3">
+                @for(int i = 1 ; i <= Model.NumberOfPages; i++)
+                {
+                    <a href="#" class="page-number">@i</a>
+                }
+            </td>
+        </tr>
+
+    </tfoot>
+</table>
+}
+else
+{
+    @:Brak zleceń
+}

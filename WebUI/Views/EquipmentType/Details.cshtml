@@ -1,0 +1,33 @@
+﻿@model Domain.Entities.EquipmentType
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<style type ="text/css">
+    #freelance dt {
+        overflow: visible;
+        width: 170px !important;
+        margin-right: 8px;
+    }
+.dl-horizontal > dd:after {
+  display: table;
+  content: "";
+  clear: both;
+
+}
+    </style>
+<h2>Szczegóły</h2>
+
+<fieldset>
+    <legend>EquipmentType</legend>
+<dl class="dl-horizontal text-overflow" id="freelance">
+        <dt>@Html.DisplayNameFor(model => model.EquipmentTypeName)</dt>
+    <dd>
+        @Html.DisplayFor(model => model.EquipmentTypeName)
+    </dd>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.EquipmentTypeID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
